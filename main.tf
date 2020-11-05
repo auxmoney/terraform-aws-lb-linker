@@ -2,13 +2,13 @@ resource "aws_lambda_function" "populate_target_group" {
   function_name    = var.name
   filename         = "${path.module}/populate_NLB_TG_with_ALB.zip"
   handler          = "populate_NLB_TG_with_ALB.lambda_handler"
-  source_code_hash = base64sha256(file("${path.module}/populate_NLB_TG_with_ALB.zip"))
+  source_code_hash = filebase64sha256("${path.module}/populate_NLB_TG_with_ALB.zip")
   runtime          = "python2.7"
   timeout          = var.lambda_timeout
   role             = aws_iam_role.lambda_assume_role.arn
 
   environment {
-    variables {
+    variables = {
       ALB_DNS_NAME                      = var.alb_dns_name
       ALB_LISTENER                      = var.alb_listener
       S3_BUCKET                         = var.s3_bucket
@@ -18,6 +18,11 @@ resource "aws_lambda_function" "populate_target_group" {
       CW_METRIC_FLAG_IP_COUNT           = var.cw_metric_flag_ip_count
     }
   }
+}
+
+resource "aws_cloudwatch_log_group" "populate_target_group" {
+  name              = "/aws/lambda/${aws_lambda_function.populate_target_group.function_name}"
+  retention_in_days = var.cloudwatch_log_retention_period
 }
 
 resource "aws_iam_role_policy_attachment" "populate_target_group" {
@@ -61,13 +66,11 @@ data "aws_iam_policy_document" "populate_target_group" {
 
   statement {
     actions = [
-      "s3:Get*",
-      "s3:PutObject",
-      "s3:CreateBucket",
-      "s3:ListBucket",
-      "s3:ListAllMyBuckets",
+      "s3:GetObject",
+      "s3:PutObject"
     ]
 
+//    resources = [var.s3_bucket_arn]
     resources = ["*"]
     effect    = "Allow"
     sid       = "S3"
@@ -80,7 +83,7 @@ data "aws_iam_policy_document" "populate_target_group" {
       "elasticloadbalancing:DeregisterTargets",
     ]
 
-    resources = ["*"]
+    resources = [var.nlb_tg_arn]
     effect    = "Allow"
     sid       = "ELB"
   }
