@@ -1,3 +1,8 @@
+resource "aws_cloudwatch_log_group" "populate_target_group" {
+  name              = "/aws/lambda/${aws_lambda_function.populate_target_group.function_name}"
+  retention_in_days = var.cloudwatch_log_retention_period
+}
+
 resource "aws_lambda_function" "populate_target_group" {
   function_name    = var.name
   filename         = "${path.module}/populate_NLB_TG_with_ALB.zip"
@@ -18,13 +23,6 @@ resource "aws_lambda_function" "populate_target_group" {
       CW_METRIC_FLAG_IP_COUNT           = var.cw_metric_flag_ip_count
     }
   }
-
-  depends_on = [aws_cloudwatch_log_group.populate_target_group]
-}
-
-resource "aws_cloudwatch_log_group" "populate_target_group" {
-  name              = "/aws/lambda/${aws_lambda_function.populate_target_group.function_name}"
-  retention_in_days = var.cloudwatch_log_retention_period
 }
 
 resource "aws_iam_role_policy_attachment" "populate_target_group" {
