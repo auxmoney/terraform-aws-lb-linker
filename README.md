@@ -21,7 +21,8 @@ attaches them to the NLB.
 | max_lookup_per_invocation | The max times of DNS look per invocation. | string | `50` | no |
 | name | Base name to use when naming resouces. | string | - | yes |
 | nlb_tg_arn | The ARN of the NLBs target group. | string | - | yes |
-| s3_bucket | Bucket to track changes between Lambda invocations. | string | - | yes |
+| s3_bucket | Bucket name to track changes between Lambda invocations. | string | - | yes |
+| s3_bucket_arn | ARN of the above bucket to restrict permissions for IAM role | string | - | yes |
 | tags | A map of tags that should be applied to AWS infrastructure. | map | - | yes |
 
 ## Outputs
