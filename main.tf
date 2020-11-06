@@ -54,7 +54,6 @@ resource "aws_iam_role" "lambda_assume_role" {
 data "aws_iam_policy_document" "populate_target_group" {
   statement {
     actions = [
-      "logs:CreateLogGroup",
       "logs:CreateLogStream",
       "logs:PutLogEvents",
     ]
