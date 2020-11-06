@@ -18,6 +18,8 @@ resource "aws_lambda_function" "populate_target_group" {
       CW_METRIC_FLAG_IP_COUNT           = var.cw_metric_flag_ip_count
     }
   }
+
+  depends_on = [aws_cloudwatch_log_group.populate_target_group]
 }
 
 resource "aws_cloudwatch_log_group" "populate_target_group" {
@@ -59,7 +61,7 @@ data "aws_iam_policy_document" "populate_target_group" {
       "logs:PutLogEvents",
     ]
 
-    resources = ["arn:aws:logs:*:*:*"]
+    resources = [aws_cloudwatch_log_group.populate_target_group.arn]
     effect    = "Allow"
     sid       = "LambdaLogging"
   }
@@ -70,8 +72,7 @@ data "aws_iam_policy_document" "populate_target_group" {
       "s3:PutObject"
     ]
 
-//    resources = [var.s3_bucket_arn]
-    resources = ["*"]
+    resources = ["${var.s3_bucket_arn}/*"]
     effect    = "Allow"
     sid       = "S3"
   }
