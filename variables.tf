@@ -4,7 +4,7 @@ variable "name" {
 
 variable "tags" {
   description = "A map of tags that should be applied to AWS infrastructure."
-  type        = "map"
+  type        = map
 }
 
 variable "lambda_timeout" {
@@ -23,6 +23,10 @@ variable "alb_listener" {
 
 variable "s3_bucket" {
   description = "Bucket to track changes between Lambda invocations."
+}
+
+variable "s3_bucket_arn" {
+  description = "Bucket ARN to track changes between Lambda invocations."
 }
 
 variable "nlb_tg_arn" {
@@ -47,4 +51,9 @@ variable "cw_metric_flag_ip_count" {
 variable "event_schedule_expression" {
   description = "How often the lambda runs. For example, `cron(0 20 * * ? *)` or `rate(5 minutes)`."
   default     = "rate(1 minute)"
+}
+
+variable "cloudwatch_log_retention_period" {
+  description = "Cloudwatch log retention period in days"
+  default     = "7"
 }
